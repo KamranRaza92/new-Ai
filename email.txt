@@ -1,0 +1,14 @@
+Subject: High-Match Candidate Alert: {{ $json.candidate_name }} for Senior Full-Stack Role 
+
+Message:
+Dear Hiring Team,
+Our AI screening engine has just identified a high-potential candidate for the Senior Full-Stack Engineer position.
+Candidate Overview:  
+Name: {{ $json.candidate_name }}  
+Experience: {{ $json.total_experience_years }} Years  
+Match Score: {{ $json.match_score }}%  
+Core Tech Stack: {{ $json.tech_stack.join(', ') }}  
+AI Analysis Summary: {{ $json.analysis_summary }}  
+The candidate's profile has been successfully synced to our Supabase talent database. Please review the full credentials and schedule an initial screening if applicable. 
+Best Regards, 
+TalentAI Automation System Powered by The Techzeen

@@ -11,4 +11,4 @@ Core Tech Stack: {{ $json.tech_stack.join(', ') }}
 AI Analysis Summary: {{ $json.analysis_summary }}  
 The candidate's profile has been successfully synced to our Supabase talent database. Please review the full credentials and schedule an initial screening if applicable. 
 Best Regards, 
-TalentAI Automation System Powered by The Techzeen
+TalentAI Automation System Powered by Aipect

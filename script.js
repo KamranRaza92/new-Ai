@@ -8,12 +8,13 @@ const fileSizeDisp = document.getElementById('fileSize');
 const uploadBtn = document.getElementById('uploadBtn');
 const progressBar = document.getElementById('progressBar');
 const progressContainer = document.getElementById('progressContainer');
-const successModal = document.getElementById('successModal');
 
-// Dynamic modal elements
-const auditScore = document.getElementById('auditScore');
-const candidateSummary = document.getElementById('candidateSummary');
-const candidateSkills = document.getElementById('candidateSkills');
+// Result Dashboard Elements
+const resultsContainer = document.getElementById('resultsContainer');
+const resScore = document.getElementById('resScore');
+const resName = document.getElementById('resName');
+const resSummary = document.getElementById('resSummary');
+const resSkills = document.getElementById('resSkills');
 
 dropArea.onclick = () => fileInput.click();
 
@@ -32,12 +33,8 @@ const resetUI = () => {
     fileInput.value = "";
     statusArea.classList.add('hidden');
     dropArea.classList.remove('hidden');
+    resultsContainer.classList.add('hidden');
     progressBar.style.width = '0%';
-};
-
-const closeModal = () => {
-    successModal.classList.add('hidden');
-    resetUI();
 };
 
 uploadBtn.onclick = async () => {
@@ -61,27 +58,31 @@ uploadBtn.onclick = async () => {
         });
 
         if (response.ok) {
-            // Parse JSON response returned from n8n / webhook
             const data = await response.json();
 
-            // Populating data into the modal fields (adjust keys according to your n8n workflow response structure)
-            auditScore.innerText = data.score ? `${data.score} / 100` : 'Evaluated';
-            candidateSummary.innerText = data.summary || 'Resume analyzed successfully.';
-            
-            // Render skills as badges if returned as an array
-            if (Array.isArray(data.skills)) {
-                candidateSkills.innerHTML = data.skills
-                    .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded text-[10px] font-mono">${skill}</span>`)
+            // Populate the UI with incoming JSON fields from your n8n response node
+            resScore.innerText = data.score ? `${data.score}%` : 'N/A';
+            resName.innerText = data.candidateName || data.name || 'Candidate';
+            resSummary.innerText = data.summary || 'Audit evaluation complete.';
+
+            // Populate skills tags
+            if (Array.isArray(data.skills) && data.skills.length > 0) {
+                resSkills.innerHTML = data.skills
+                    .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-lg text-xs font-mono font-medium">${skill}</span>`)
                     .join('');
             } else {
-                candidateSkills.innerText = data.skills || 'N/A';
+                resSkills.innerText = data.skills || 'No key skills extracted.';
             }
 
             progressBar.style.width = '100%';
+
             setTimeout(() => {
-                successModal.classList.remove('hidden');
+                resultsContainer.classList.remove('hidden');
                 lucide.createIcons();
+                // Smooth scroll down to the rendered results
+                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }, 600);
+
         } else {
             alert('System Error: Infrastructure response failed.');
             resetUI();

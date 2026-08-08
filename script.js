@@ -64,38 +64,20 @@ uploadBtn.onclick = async () => {
         });
 
         if (response.ok) {
-            let responseData = await response.json();
-            
-            // Debugging log to see actual object in browser console
-            console.log("n8n Response Data:", responseData);
+            const data = await response.json();
 
-            // اگر n8n سے ڈیٹا Array میں آ رہا ہو تو پہلا آئٹم منتخب کریں
-            const data = Array.isArray(responseData) ? responseData[0] : responseData;
-
-            // 1. Candidate Name (تعدد کیز چیک کریں)
-            const name = data.candidateName || data.candidate_name || data.name || 'Candidate Name Not Found';
-            resName.innerText = name;
-
-            // 2. Score
-            resScore.innerText = (data.score !== undefined && data.score !== null) ? `${data.score}%` : 'N/A';
-
-            // 3. Summary
+            // Populate the UI with incoming JSON fields from your n8n response node
+            resScore.innerText = data.score ? `${data.score}%` : 'N/A';
+            resName.innerText = data.candidateName || data.name || 'Candidate';
             resSummary.innerText = data.summary || 'Audit evaluation complete.';
 
-            // 4. Populate skills tags safely
-            let skillsArray = [];
-            if (Array.isArray(data.skills)) {
-                skillsArray = data.skills;
-            } else if (typeof data.skills === 'string') {
-                skillsArray = data.skills.split(',').map(s => s.trim());
-            }
-
-            if (skillsArray.length > 0) {
-                resSkills.innerHTML = skillsArray
+            // Populate skills tags
+            if (Array.isArray(data.skills) && data.skills.length > 0) {
+                resSkills.innerHTML = data.skills
                     .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-lg text-xs font-mono font-medium">${skill}</span>`)
                     .join('');
             } else {
-                resSkills.innerText = 'No key skills extracted.';
+                resSkills.innerText = data.skills || 'No key skills extracted.';
             }
 
             progressBar.style.width = '100%';
@@ -112,8 +94,7 @@ uploadBtn.onclick = async () => {
             resetUI();
         }
     } catch (err) {
-        console.error("Fetch Error:", err);
-        alert('Fatal: Remote host connection refused. Ensure n8n is running.');
+        alert('Fatal: Remote host connection refused.');
         resetUI();
     } finally {
         uploadBtn.disabled = false;

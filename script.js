@@ -8,10 +8,10 @@ console.warn = function (...args) {
 
 // Set the standardFontDataUrl BEFORE any PDF parsing operations take place
 if (window['pdfjs-dist/build/pdf']) {
-    window['pdfjs-dist/build/pdf'].GlobalWorkerOptions.standardFontDataUrl = 
+    window['pdfjs-dist/build/pdf'].GlobalWorkerOptions.standardFontDataUrl =
         'https://unpkg.com/pdfjs-dist@3.11.174/standard_fonts/';
 } else if (typeof pdfjsLib !== 'undefined') {
-    pdfjsLib.GlobalWorkerOptions.standardFontDataUrl = 
+    pdfjsLib.GlobalWorkerOptions.standardFontDataUrl =
         'https://unpkg.com/pdfjs-dist@3.11.174/standard_fonts/';
 }
 
@@ -121,13 +121,15 @@ uploadBtn.onclick = async () => {
                 }
             }
 
-            if (resSkills) {
-                if (skillsArray.length > 0) {
-                    resSkills.innerHTML = skillsArray
-                        .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-lg text-xs font-mono font-medium">${skill}</span>`)
-                        .join(' ');
+
+            if (resStatus) {
+                const auditStatus = data.status || (scoreVal >= 70 ? 'Selected' : 'Rejected');
+                if (auditStatus.toLowerCase() === 'selected') {
+                    resStatus.innerText = 'Selected';
+                    resStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-lg border w-max bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
                 } else {
-                    resSkills.innerText = 'No key skills extracted.';
+                    resStatus.innerText = 'Rejected';
+                    resStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-lg border w-max bg-rose-500/10 text-rose-400 border-rose-500/30';
                 }
             }
 

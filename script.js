@@ -1,3 +1,10 @@
+const originalWarn = console.warn;
+console.warn = function (...args) {
+    if (args[0] && typeof args[0] === 'string' && args[0].includes('standardFontDataUrl')) {
+        return;
+    }
+    originalWarn.apply(console, args);
+};
 // Set the standardFontDataUrl BEFORE any PDF parsing operations take place
 if (window['pdfjs-dist/build/pdf']) {
     window['pdfjs-dist/build/pdf'].GlobalWorkerOptions.standardFontDataUrl = 

@@ -102,17 +102,27 @@
                 </button>
             </div>
 
-            <!-- Match Score and Candidate Name -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-zinc-900/60 border border-zinc-800 p-4 rounded-xl">
-                    <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold block mb-1">Match Score</span>
-                    <p id="resScore" class="text-3xl font-extrabold text-blue-400">--</p>
-                </div>
-                <div class="bg-zinc-900/60 border border-zinc-800 p-4 rounded-xl col-span-2">
-                    <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold block mb-1">Candidate Name</span>
-                    <p id="resName" class="text-lg font-bold text-white">--</p>
-                </div>
-            </div>
+           <!-- Match Score, Candidate Name, and Selection Status -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="bg-zinc-900/60 border border-zinc-800 p-4 rounded-xl">
+        <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold block mb-1">Match Score</span>
+        <p id="resScore" class="text-3xl font-extrabold text-blue-400">--</p>
+    </div>
+    
+    <div class="bg-zinc-900/60 border border-zinc-800 p-4 rounded-xl col-span-2">
+        <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold block mb-1">Candidate Name</span>
+        <p id="resName" class="text-lg font-bold text-white">--</p>
+    </div>
+
+    <!-- Candidate Selection Status Badge -->
+    <div class="bg-zinc-900/60 border border-zinc-800 p-4 rounded-xl flex flex-col justify-center">
+        <span class="text-[10px] text-zinc-500 uppercase tracking-widest font-bold block mb-1">Audit Status</span>
+        <div id="resStatus" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold w-max">
+            <!-- Dynamic Status Badge rendered via JS -->
+            <span id="resStatusText">--</span>
+        </div>
+    </div>
+</div>
 
             <!-- Executive Summary -->
             <div class="bg-zinc-900/60 border border-zinc-800 p-5 rounded-xl space-y-2">

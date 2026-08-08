@@ -5,6 +5,7 @@ console.warn = function (...args) {
     }
     originalWarn.apply(console, args);
 };
+
 // Set the standardFontDataUrl BEFORE any PDF parsing operations take place
 if (window['pdfjs-dist/build/pdf']) {
     window['pdfjs-dist/build/pdf'].GlobalWorkerOptions.standardFontDataUrl = 
@@ -31,6 +32,7 @@ const resScore = document.getElementById('resScore');
 const resName = document.getElementById('resName');
 const resSummary = document.getElementById('resSummary');
 const resSkills = document.getElementById('resSkills');
+const resStatus = document.getElementById('resStatus'); // Status element reference
 
 dropArea.onclick = () => fileInput.click();
 
@@ -82,30 +84,51 @@ uploadBtn.onclick = async () => {
             // اگر n8n سے ڈیٹا Array میں آ رہا ہو تو پہلا آئٹم منتخب کریں
             const data = Array.isArray(responseData) ? responseData[0] : responseData;
 
-            // 1. Candidate Name (تعدد کیز چیک کریں)
+            // 1. Candidate Name
             const name = data.candidateName || data.candidate_name || data.name || 'Candidate Name Not Found';
-            resName.innerText = name;
+            if (resName) resName.innerText = name;
 
             // 2. Score
-            resScore.innerText = (data.score !== undefined && data.score !== null) ? `${data.score}%` : 'N/A';
+            const scoreVal = (data.score !== undefined && data.score !== null) ? Number(data.score) : 0;
+            if (resScore) resScore.innerText = (data.score !== undefined && data.score !== null) ? `${scoreVal}%` : 'N/A';
 
             // 3. Summary
-            resSummary.innerText = data.summary || 'Audit evaluation complete.';
+            if (resSummary) resSummary.innerText = data.summary || 'Audit evaluation complete.';
 
-            // 4. Populate skills tags safely
+            // 4. Status Check (n8n status or fallback based on score)
+            if (resStatus) {
+                const auditStatus = data.status || (scoreVal >= 70 ? 'Selected' : 'Rejected');
+                if (auditStatus.toLowerCase() === 'selected') {
+                    resStatus.innerText = 'Selected';
+                    resStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-lg border w-max bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+                } else {
+                    resStatus.innerText = 'Rejected';
+                    resStatus.className = 'text-xs font-bold px-3 py-1.5 rounded-lg border w-max bg-rose-500/10 text-rose-400 border-rose-500/30';
+                }
+            }
+
+            // 5. Populate skills tags safely
             let skillsArray = [];
             if (Array.isArray(data.skills)) {
                 skillsArray = data.skills;
             } else if (typeof data.skills === 'string') {
-                skillsArray = data.skills.split(',').map(s => s.trim());
+                try {
+                    // Try parsing if stringified JSON array
+                    const parsed = JSON.parse(data.skills);
+                    skillsArray = Array.isArray(parsed) ? parsed : data.skills.split(',').map(s => s.trim());
+                } catch (e) {
+                    skillsArray = data.skills.split(',').map(s => s.trim());
+                }
             }
 
-            if (skillsArray.length > 0) {
-                resSkills.innerHTML = skillsArray
-                    .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-lg text-xs font-mono font-medium">${skill}</span>`)
-                    .join('');
-            } else {
-                resSkills.innerText = 'No key skills extracted.';
+            if (resSkills) {
+                if (skillsArray.length > 0) {
+                    resSkills.innerHTML = skillsArray
+                        .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-lg text-xs font-mono font-medium">${skill}</span>`)
+                        .join(' ');
+                } else {
+                    resSkills.innerText = 'No key skills extracted.';
+                }
             }
 
             progressBar.style.width = '100%';

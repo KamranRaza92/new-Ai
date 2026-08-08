@@ -1,11 +1,3 @@
-{
-  "candidateName": "={{ $json.name }}",
-  "score": ={{ $json.score }},
-  "summary": "={{ $json.summary }}",
-  "skills": ={{ typeof $json.skills === 'string' ? JSON.parse($json.skills) : $json.skills }}
-}
-
-
 {{ 
 {
   "candidateName": $json.name,

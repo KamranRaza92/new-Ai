@@ -1,3 +1,9 @@
+// Set the standardFontDataUrl BEFORE any PDF parsing operations take place
+if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.standardFontDataUrl = 
+        `https://unpkg.com/pdfjs-dist@${pdfjsLib.version || '3.11.174'}/standard_fonts/`;
+}
+
 lucide.createIcons();
 
 const fileInput = document.getElementById('fileInput');

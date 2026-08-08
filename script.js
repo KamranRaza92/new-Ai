@@ -10,6 +10,11 @@ const progressBar = document.getElementById('progressBar');
 const progressContainer = document.getElementById('progressContainer');
 const successModal = document.getElementById('successModal');
 
+// Dynamic modal elements
+const auditScore = document.getElementById('auditScore');
+const candidateSummary = document.getElementById('candidateSummary');
+const candidateSkills = document.getElementById('candidateSkills');
+
 dropArea.onclick = () => fileInput.click();
 
 fileInput.onchange = (e) => {
@@ -50,13 +55,28 @@ uploadBtn.onclick = async () => {
     setTimeout(() => { progressBar.style.width = '75%'; }, 100);
 
     try {
-        const response = await fetch('http://localhost:5678/webhook-test/50f24481-550e-4ba5-8d31-eb1042de4789',
-            {
-                method: 'POST',
-                body: formData
-            });
+        const response = await fetch('http://localhost:5678/webhook-test/50f24481-550e-4ba5-8d31-eb1042de4789', {
+            method: 'POST',
+            body: formData
+        });
 
         if (response.ok) {
+            // Parse JSON response returned from n8n / webhook
+            const data = await response.json();
+
+            // Populating data into the modal fields (adjust keys according to your n8n workflow response structure)
+            auditScore.innerText = data.score ? `${data.score} / 100` : 'Evaluated';
+            candidateSummary.innerText = data.summary || 'Resume analyzed successfully.';
+            
+            // Render skills as badges if returned as an array
+            if (Array.isArray(data.skills)) {
+                candidateSkills.innerHTML = data.skills
+                    .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded text-[10px] font-mono">${skill}</span>`)
+                    .join('');
+            } else {
+                candidateSkills.innerText = data.skills || 'N/A';
+            }
+
             progressBar.style.width = '100%';
             setTimeout(() => {
                 successModal.classList.remove('hidden');

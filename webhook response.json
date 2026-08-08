@@ -1,6 +1,6 @@
 {
-  "candidateName":{{ $json.name }} ,
-  "score":{{ $json.score }} ,
-  "summary": {{ $json.summary }},
-  "skills":{{ $json.skills }}
+  "candidateName": "{{ $json.name }}",
+  "score": "{{ $json.score }}",
+  "summary": "{{ $json.summary }}",
+  "skills": "{{ $json.skills }}"
 }

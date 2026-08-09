@@ -107,9 +107,28 @@ uploadBtn.onclick = async () => {
                 }
             }
 
-            // 5. Populate skills tags safely
+            // 5. Universal Skills Parser
             if (resSkills) {
-                const rawSkills = data.skills || data.Skills || data.core_skills || data.competencies || [];
+                let rawSkills = null;
+
+                // Handle nested stringified JSON output from AI models
+                let parsedData = data;
+                if (typeof data === 'string') {
+                    try { parsedData = JSON.parse(data); } catch (e) {}
+                } else if (data.output && typeof data.output === 'string') {
+                    try { parsedData = JSON.parse(data.output); } catch (e) {}
+                } else if (data.text && typeof data.text === 'string') {
+                    try { parsedData = JSON.parse(data.text); } catch (e) {}
+                }
+
+                // Match any possible JSON key returned from n8n
+                rawSkills = parsedData.skills || 
+                            parsedData.Skills || 
+                            parsedData.core_skills || 
+                            parsedData.technical_skills || 
+                            parsedData.competencies || 
+                            parsedData.key_skills || [];
+
                 let skillsArray = [];
 
                 if (Array.isArray(rawSkills)) {
@@ -123,12 +142,14 @@ uploadBtn.onclick = async () => {
                     }
                 }
 
-                // Filter valid non-empty items
-                skillsArray = skillsArray.filter(skill => skill && typeof skill === 'string' && skill.trim().length > 0);
+                // Filter valid clean items
+                skillsArray = skillsArray
+                    .map(s => (typeof s === 'string' ? s.trim() : String(s)))
+                    .filter(s => s.length > 0 && s.toLowerCase() !== 'null' && s.toLowerCase() !== 'undefined');
 
                 if (skillsArray.length > 0) {
                     resSkills.innerHTML = skillsArray
-                        .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs font-mono font-medium inline-block">${skill.trim()}</span>`)
+                        .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs font-mono font-medium inline-block">${skill}</span>`)
                         .join(' ');
                 } else {
                     resSkills.innerHTML = '<span class="text-xs text-zinc-500 italic">No core competencies identified in this resume.</span>';

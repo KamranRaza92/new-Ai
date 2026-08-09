@@ -119,10 +119,17 @@
                         <p class="text-xs text-zinc-500 font-mono">Parsed via GPT-4o Pipeline</p>
                     </div>
                 </div>
-                <button onclick="resetUI()"
-                    class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 px-4 py-2 rounded-lg text-zinc-300 transition-all active:scale-95">
-                    Reset Audit
-                </button>
+                <button onclick="resetUI()" 
+    class="relative group overflow-hidden rounded-xl p-[1px] font-semibold text-xs transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg shadow-rose-500/10 hover:shadow-rose-500/20">
+    <!-- Gradient Border effect -->
+    <span class="absolute inset-0 bg-gradient-to-r from-rose-500 via-zinc-700 to-rose-500 rounded-xl transition-all duration-500 group-hover:opacity-100 opacity-60"></span>
+    
+    <!-- Button Content Container -->
+    <span class="relative flex items-center gap-2 px-4 py-2.5 rounded-[11px] bg-zinc-950/90 text-zinc-300 group-hover:text-white transition-colors duration-300">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-rose-400 group-hover:rotate-[-180deg] transition-transform duration-500"></i>
+        <span>Reset Audit</span>
+    </span>
+</button>
             </div>
 
             <!-- Match Score, Candidate Name, and Remarks Grid -->

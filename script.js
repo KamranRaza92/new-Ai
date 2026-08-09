@@ -107,19 +107,32 @@ uploadBtn.onclick = async () => {
                 }
             }
 
-            // 5. Populate skills tags safely
-            let skillsArray = [];
-            if (Array.isArray(data.skills)) {
-                skillsArray = data.skills;
-            } else if (typeof data.skills === 'string') {
-                try {
-                    // Try parsing if stringified JSON array
-                    const parsed = JSON.parse(data.skills);
-                    skillsArray = Array.isArray(parsed) ? parsed : data.skills.split(',').map(s => s.trim());
-                } catch (e) {
-                    skillsArray = data.skills.split(',').map(s => s.trim());
-                }
-            }
+           // Populate skills tags safely
+if (resSkills) {
+    let skillsArray = [];
+    
+    if (Array.isArray(data.skills)) {
+        skillsArray = data.skills;
+    } else if (typeof data.skills === 'string') {
+        try {
+            const parsed = JSON.parse(data.skills);
+            skillsArray = Array.isArray(parsed) ? parsed : data.skills.split(',').map(s => s.trim());
+        } catch (e) {
+            skillsArray = data.skills.split(',').map(s => s.trim());
+        }
+    }
+
+    // Filter out empty items
+    skillsArray = skillsArray.filter(skill => skill && skill.trim().length > 0);
+
+    if (skillsArray.length > 0) {
+        resSkills.innerHTML = skillsArray
+            .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs font-mono font-medium inline-block">${skill.trim()}</span>`)
+            .join('');
+    } else {
+        resSkills.innerHTML = '<span class="text-xs text-zinc-500 italic">No key skills extracted.</span>';
+    }
+}
 
 
             if (resStatus) {

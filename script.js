@@ -78,24 +78,27 @@ uploadBtn.onclick = async () => {
         if (response.ok) {
             let responseData = await response.json();
 
-            // Debugging log
-            console.log("n8n Response Data:", responseData);
+            // Console debug
+            console.log("n8n Raw Response:", responseData);
 
-            // Select array item or object
-            const data = Array.isArray(responseData) ? responseData[0] : responseData;
+            // 1. Array یا Normal Object کو Handle کریں
+            let rawObj = Array.isArray(responseData) ? responseData[0] : responseData;
+            
+            // 2. n8n کی طرف سے اکثر 'body' کے اندر اصل ڈیٹا آتا ہے
+            const data = rawObj.body ? rawObj.body : rawObj;
 
-            // 1. Candidate Name
+            // Candidate Name
             const name = data.candidateName || data.candidate_name || data.name || 'Candidate Name Not Found';
             if (resName) resName.innerText = name;
 
-            // 2. Score
+            // Score
             const scoreVal = (data.score !== undefined && data.score !== null) ? Number(data.score) : 0;
             if (resScore) resScore.innerText = (data.score !== undefined && data.score !== null) ? `${scoreVal}%` : 'N/A';
 
-            // 3. Summary
+            // Summary
             if (resSummary) resSummary.innerText = data.summary || 'Audit evaluation complete.';
 
-            // 4. Status Check
+            // Status Check
             if (resStatus) {
                 const auditStatus = data.status || (scoreVal >= 70 ? 'Selected' : 'Rejected');
                 if (auditStatus.toLowerCase() === 'selected') {
@@ -107,29 +110,10 @@ uploadBtn.onclick = async () => {
                 }
             }
 
-            // 5. Universal Skills Parser
+            // Skills Section
             if (resSkills) {
-                let rawSkills = null;
-
-                // Handle nested stringified JSON output from AI models
-                let parsedData = data;
-                if (typeof data === 'string') {
-                    try { parsedData = JSON.parse(data); } catch (e) { }
-                } else if (data.output && typeof data.output === 'string') {
-                    try { parsedData = JSON.parse(data.output); } catch (e) { }
-                } else if (data.text && typeof data.text === 'string') {
-                    try { parsedData = JSON.parse(data.text); } catch (e) { }
-                }
-
-                // Match any possible JSON key returned from n8n
-                rawSkills = parsedData.skills ||
-                    parsedData.Skills ||
-                    parsedData.core_skills ||
-                    parsedData.technical_skills ||
-                    parsedData.competencies ||
-                    parsedData.key_skills || [];
-
                 let skillsArray = [];
+                const rawSkills = data.skills || data.Skills || data.core_skills || data.technical_skills || [];
 
                 if (Array.isArray(rawSkills)) {
                     skillsArray = rawSkills;
@@ -145,12 +129,12 @@ uploadBtn.onclick = async () => {
                 // Filter valid clean items
                 skillsArray = skillsArray
                     .map(s => (typeof s === 'string' ? s.trim() : String(s)))
-                    .filter(s => s.length > 0 && s.toLowerCase() !== 'null' && s.toLowerCase() !== 'undefined');
+                    .filter(s => s.length > 0 && s.toLowerCase() !== 'null');
 
                 if (skillsArray.length > 0) {
                     resSkills.innerHTML = skillsArray
-                        .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs font-mono font-medium inline-block">${skill}</span>`)
-                        .join(' ');
+                        .map(skill => `<span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1.5 rounded-lg text-xs font-mono font-medium inline-block m-0.5">${skill}</span>`)
+                        .join('');
                 } else {
                     resSkills.innerHTML = '<span class="text-xs text-zinc-500 italic">No core competencies identified in this resume.</span>';
                 }

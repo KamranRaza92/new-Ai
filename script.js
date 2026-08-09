@@ -114,20 +114,20 @@ uploadBtn.onclick = async () => {
                 // Handle nested stringified JSON output from AI models
                 let parsedData = data;
                 if (typeof data === 'string') {
-                    try { parsedData = JSON.parse(data); } catch (e) {}
+                    try { parsedData = JSON.parse(data); } catch (e) { }
                 } else if (data.output && typeof data.output === 'string') {
-                    try { parsedData = JSON.parse(data.output); } catch (e) {}
+                    try { parsedData = JSON.parse(data.output); } catch (e) { }
                 } else if (data.text && typeof data.text === 'string') {
-                    try { parsedData = JSON.parse(data.text); } catch (e) {}
+                    try { parsedData = JSON.parse(data.text); } catch (e) { }
                 }
 
                 // Match any possible JSON key returned from n8n
-                rawSkills = parsedData.skills || 
-                            parsedData.Skills || 
-                            parsedData.core_skills || 
-                            parsedData.technical_skills || 
-                            parsedData.competencies || 
-                            parsedData.key_skills || [];
+                rawSkills = parsedData.skills ||
+                    parsedData.Skills ||
+                    parsedData.core_skills ||
+                    parsedData.technical_skills ||
+                    parsedData.competencies ||
+                    parsedData.key_skills || [];
 
                 let skillsArray = [];
 
